@@ -1,14 +1,14 @@
 import "./polyfills.js"
-import express from 'express';
 import { Wallet } from "ethers";
-
+import fs from 'fs';
+import path from 'path';
 import inquirer from 'inquirer';
 import { Client } from "@xmtp/xmtp-js"
 import { render, Text } from "ink"
 import React from "react"
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
-
+import dotenv from 'dotenv';
 import { Message, MessageList, MessageStream } from "./renderers.js"
 import {
   loadWallet,
@@ -19,145 +19,67 @@ import {
 
 yargs(hideBin(process.argv))
   .command("launch", "Launch your agent", {}, async (argv) => {
-    const { env } = argv
+    console.log('Please visit localhost:3000 and download your XMTP key bundle.');
+
     const questions = [
       {
-        type: 'list',
-        name: 'wallet',
-        message: 'You must connect your wallet to proceed',
-        choices: ['Connect wallet', 'Cancel'],
+        type: 'input',
+        name: 'keyBundlePath',
+        message: 'Provide the path to your downloaded key bundle',
       },
     ];
     const answers = await inquirer.prompt(questions);
 
-    if (answers.wallet === 'Connect wallet') {
-      const app = express();
-      let walletConnected = false;
+    const keyBundlePath = path.resolve(answers.keyBundlePath);
+    if (fs.existsSync(keyBundlePath)) {
+      const keyBundleBinary = fs.readFileSync(keyBundlePath, 'utf-8');
 
-      app.get('/', (req, res) => {
-        console.log('Home page is up, should have connect wallet');
-        res.send(`
-          <html>
-            <body>
-              <button id="connect">Connect Wallet</button>
-              <script src="https://cdn.ethers.io/lib/ethers-5.0.umd.min.js"></script>
-              <script type="module" src="https://unpkg.com/@xmtp/xmtp-js@11.2.1/dist/index.js"></script>
-              <script>
-                const ethers = window.ethers;
-                document.getElementById('connect').addEventListener('click', async () => {
-                  console.log('Connect button clicked');
-                  if (window.ethereum) {
-                    await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    const provider = new ethers.providers.Web3Provider(window.ethereum);
-                    const signer = provider.getSigner();
-                    const client = await Client.create(signer, {skipContactPublishing: true, persistConversations: false});
-                    const keys = await client.getKeys();
-                    fetch('http://localhost:3000/keys', {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify(keys),
-                    });
-                  }
-                });
-              </script>
-            </body>
-          </html>
-        `);
-      });
-    
-      // app.get('/', (req, res) => {
-      //   console.log('Home page is up, should have connect wallet');
-      //   res.send(`
-      //     <html>
-      //       <body>
-      //         <button id="connect">Connect Wallet</button>
-      //         <script src="https://cdn.ethers.io/lib/ethers-5.0.umd.min.js"></script>
-      //         <script>
-      //           const ethers = window.ethers;
-      //           document.getElementById('connect').addEventListener('click', async () => {
-      //             console.log('Connect button clicked');
-      //             if (window.ethereum) {
-      //               await window.ethereum.request({ method: 'eth_requestAccounts' });
-      //               const provider = new ethers.providers.Web3Provider(window.ethereum);
-      //               const signer = provider.getSigner();
-      //               // const address = await signer.getAddress();
-      //               // console.log('This is trying /connect with address', address);
-      //               // fetch('http://localhost:3000/connect?address=' + address);
-      //               const provider = new ethers.providers.Web3Provider(window.ethereum);
-      //               const signer = provider.getSigner();
-      //               const client = await Client.create(signer, {skipContactPublishing: true, persistConversations: false});
-      //               const keys = await client.getKeys();
-      //               fetch('http://localhost:3000/keys', {
-      //                 method: 'POST',
-      //                 headers: {
-      //                   'Content-Type': 'application/json',
-      //                 },
-      //                 body: JSON.stringify(keys),
-      //               });
-      //             }
-      //           });
-      //         </script>
-      //       </body>
-      //     </html>
-      //   `);
-      // });
-      
-      let walletAddress = null;
-      
-      app.get('/connect', (req, res) => {
-        console.log('Got a request on /connect');
-        walletConnected = true;
-        walletAddress = req.query.address;
-        console.log(`Wallet connected: ${walletAddress}`);
+      // Convert the binary string back into a Buffer
+      const keyBundle = Buffer.from(keyBundleBinary, 'binary');
+      console.log(`Key bundle: ${typeof (keyBundle)}`)
 
-      
-        res.send(`Wallet connected: ${walletAddress}`);
+      const client = await Client.create(null, {
+        env: "dev",
+        privateKeyOverride: keyBundle
       });
 
-      // app.get('/connect', async (req, res) => {
-      //   console.log('Received request on /connect');
-      //   walletConnected = true;
-      //   walletAddress = req.query.address;
-      
-      //   if (typeof walletAddress === 'string') {
-      //     // Create an ethers Wallet instance using the connected address
-      //     // Note: This is a read-only wallet since we don't have the private key
-      //     const wallet = new Wallet(walletAddress);
-      
-      //     // Generate the XMTP key bundle
-      //     const keys = await Client.getKeys(wallet, {skipContactPublishing: true, persistConversations: false});
-      
-      //     console.log(`Successfully generated key bundle: ${JSON.stringify(keys)}`);
-      
-      //     res.send(`Wallet connected: ${walletAddress}`);
-      //   } else {
-      //     console.log('No wallet address provided');
-      //     res.status(400).send('No wallet address provided');
-      //   }
-      // });
+      console.log('Successfully created XMTP client from file!');
+      console.log('Generating .env file...');
+      fs.appendFileSync('.env', `\nXMTP_KEY=${keyBundle.toString('base64')}`);
 
-      app.post('/keys', (req, res) => {
-        const keys = req.body;
-        // Store the keys for later use
-        console.log(`Keys: ${JSON.stringify(keys)}`)
-      });
-    
-      const server = app.listen(3000, () => {
-        console.log('Click on this link to connect your wallet: localhost:3000');
-      });
-    
-      while (!walletConnected) {
-        console.log('Waiting for wallet to connect...');
-        await new Promise(resolve => setTimeout(resolve, 1000));
+      // Load the .env file
+      dotenv.config();
+
+      // Create the client with the key bundle from the .env file
+      if (process.env.XMTP_KEY) {
+        const envKeyBundle = Buffer.from(process.env.XMTP_KEY, 'base64');
+        const envClient = await Client.create(null, { 
+          env: "dev", 
+          privateKeyOverride: envKeyBundle 
+        });
+      
+        console.log('Successfully generated client from environment variable.');
+      } else {
+        console.log('XMTP_KEY not found in environment variables');
       }
-    
-      server.close();
-      console.log('Successfully connected wallet');
+
+      const deleteQuestions = [
+        {
+          type: 'list',
+          name: 'delete',
+          message: `Delete ${keyBundlePath}?`,
+          choices: ['Yes', 'No'],
+        },
+      ];
+      const deleteAnswers = await inquirer.prompt(deleteQuestions);
+
+      if (deleteAnswers.delete === 'Yes') {
+        console.log(`Deleting file ${keyBundlePath}...`);
+        fs.unlinkSync(keyBundlePath);
+        console.log('Successfully deleted.');
+      }
     } else {
-      console.log('Cancelled');
-      process.exit(0);
+      console.log('Invalid key bundle path');
     }
   })
   .command("init", "Initialize wallet", {}, async (argv) => {
