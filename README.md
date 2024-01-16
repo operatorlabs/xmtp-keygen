@@ -14,7 +14,7 @@ Prerequisite: Have Metamask or another wallet app installed in your browser.
 9. Follow the isntructions on the screen to find your key bundle, and get the path to that file to use later
 
 
-# --Old xmtp docs--
+# --IGNORE EVERYTHING BELOW THIS LINE--
 
 # Developer Quickstart
 
