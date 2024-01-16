@@ -11,7 +11,8 @@ Prerequisite: Have Metamask or another wallet app installed in your browser.
 6. After you connect, you will see a button that says "Generate and Download XMTP Key Bundle"
 7. Clicking the button will tell you to sign again in your wallet, this time to create an XMTP identity
 8. Once you sign, you will be directed back to your browser and the key bundle will be downloaded
-9. Follow the isntructions on the screen to find your key bundle, and get the path to that file to use later
+9. Follow the instructions on the screen to find your key bundle, and get the path to that file to use later
+10. Navigate back to the CLI, it will ask for the path to the file. Put the path in and press enter
 
 
 # --IGNORE EVERYTHING BELOW THIS LINE--
