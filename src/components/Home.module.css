@@ -1,7 +1,13 @@
-.Home {
+/* .Home {
   background-color: white;
+} */
+.Home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  height: 100vh;
 }
-
 .walletBtn {
   display: flex;
   flex-direction: column;
@@ -30,4 +36,29 @@
   box-sizing: border-box;
   line-height: 1;
   margin: 10px;
+}
+.codeBlock {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  margin: 0 auto;
+  background-color: transparent;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 12px;
+  font-family: 'Courier New', Courier, monospace;
+}
+.codeBlock code {
+  white-space: pre-wrap;
+}
+/* adjust as needed for the message to user */
+.contentContainer {
+  align-self: flex-start;
+  width: 80%;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+.centerText {
+  text-align: center;
 }
