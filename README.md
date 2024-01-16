@@ -1,6 +1,4 @@
-# XMTP Key Generator
-
-## How to generate your agent's key bundle locally
+# Generate your key bundle locally
 
 Prerequisite: Have Metamask or another wallet app installed in your browser.
 
