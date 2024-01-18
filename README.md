@@ -7,7 +7,7 @@ Prerequisite: Have Metamask or another wallet app installed in your browser.
 3. Go to localhost:3000 in your browser first, and make sure you get an error because there is nothing there
 3. Run npm run dev. This will run the machine on localhost:3000
 4. Go back to your browser and refresh the page for localhost:3000. You should see a button that says "Connect Wallet"
-5. When you click connect wallet, if you haven't connected a wallet yet it will open a wallet app and ask you to connect
+5. When you click connect wallet, if you haven't connected a wallet yet it will open a wallet app and ask you to connect. If you can only seem to connect one wallet and you want to connect a different one, you may be to manually do this in your wallet app. For example in the Metamask extension you can disconnect an address and connect another one. If you have issues with this step send us a message.
 6. After you connect, you will see a button that says "Generate and Download XMTP Key Bundle"
 7. Clicking the button will tell you to sign again in your wallet, this time to create an XMTP identity
 8. Once you sign, you will be directed back to your browser and the key bundle will be downloaded

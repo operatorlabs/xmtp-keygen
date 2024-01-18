@@ -13,7 +13,7 @@
         "@types/node": "20.11.0",
         "@types/react": "18.2.48",
         "@types/react-dom": "18.2.18",
-        "@xmtp/xmtp-js": "10.2.0",
+        "@xmtp/xmtp-js": "11.2.1",
         "autoprefixer": "10.4.14",
         "eslint": "8.40.0",
         "eslint-config-next": "13.4.2",

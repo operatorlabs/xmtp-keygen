@@ -37,7 +37,7 @@ export default function Home() {
     // Convert the binary string back into a Buffer
     const keyBundle = Buffer.from(keyBundleBinary, 'binary');
     const client = await Client.create(null, {
-      env: "dev", // choose xmtp network here
+      env: "prod", // choose xmtp network here
       privateKeyOverride: keyBundle
     });
               `}
@@ -77,6 +77,7 @@ export default function Home() {
       const keys = await Client.getKeys(signer, {
         skipContactPublishing: true,
         persistConversations: false,
+        env: "production"
       });
       const address = await signer.getAddress();
       setWalletAddress(address);
@@ -97,50 +98,6 @@ export default function Home() {
     setKeysDownloaded(true);
   };
 
-  //   return (
-  //     <div className={styles.Home}>
-  //       {!isConnected && (
-  //         <div className={styles.walletBtn}>
-  //           <button onClick={connectWallet} className={styles.btnXmtp}>
-  //             Connect Wallet
-  //           </button>
-  //         </div>
-  //       )}
-  //       {isConnected && (
-  //         <div className={styles.walletBtn}>
-  //           <button onClick={generateKeys} className={styles.btnXmtp}>
-  //             Generate and Download XMTP Key Bundle
-  //           </button>
-  //         </div>
-  //       )}
-  //       {keysDownloaded && (
-  //         <div className="contentContainer">
-  //           <div className={styles.message}>
-  //             Check your Downloads folder for a file with {walletAddress} in the name.
-  //             <br />
-  //             You can create a XMTP client from this file by adapting the code below. Please keep your key bundle secure.
-  //             <pre className={styles.codeBlock}>
-  //               <code>
-  //                 {`
-  // import fs from 'fs';
-  // import { Client } from '@xmtp/xmtp-js'
-  // const keyBundlePath = 'path to your key bundle you downloaded'
-  // if (fs.existsSync(keyBundlePath)) {
-  //   const keyBundleBinary = fs.readFileSync(keyBundlePath, 'utf-8');
-  //   // Convert the binary string back into a Buffer
-  //   const keyBundle = Buffer.from(keyBundleBinary, 'binary');
-  //   const client = await Client.create(null, {
-  //     env: "dev", // choose xmtp network here
-  //     privateKeyOverride: keyBundle
-  //   });
-  //             `}
-  //               </code>
-  //             </pre>
-  //           </div>
-  //         </div>
-  //       )}
-  //     </div>
-  //   );
   return (
     <div className={styles.Home}>
       {!keysDownloaded ? (
