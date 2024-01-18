@@ -37,7 +37,7 @@ export default function Home() {
     // Convert the binary string back into a Buffer
     const keyBundle = Buffer.from(keyBundleBinary, 'binary');
     const client = await Client.create(null, {
-      env: "prod", // choose xmtp network here
+      env: "production",
       privateKeyOverride: keyBundle
     });
               `}
